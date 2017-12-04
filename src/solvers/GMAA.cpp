@@ -360,23 +360,16 @@ try
         
     //output the found policy    
         boost::shared_ptr<JointPolicyDiscretePure> found_jpol;
-        if(!args.useBGclustering && args.horizon<15)
+        found_jpol = gmaa->GetJointPolicyDiscretePure()->ToJointPolicyPureVector();
+        if(args.verbose >= 1)
+            cout << found_jpol->SoftPrint();
+        of_jpol <<  found_jpol->SoftPrint();
+        for(Index k=0;k!=gmaa->GetNrAgents();++k)
         {
-            // with clustering or with a high horizon we don't want to
-            // expand the policy, takes too long
-            found_jpol = gmaa->GetJointPolicyDiscretePure()->ToJointPolicyPureVector();
-            if(args.verbose >= 1)
-                cout << found_jpol->SoftPrint();
-            of_jpol <<  found_jpol->SoftPrint();
-            for(Index k=0;k!=gmaa->GetNrAgents();++k)
-            {
-                const PolicyDiscretePure* policyDiscretePure=
-                    static_cast<PolicyDiscretePure*>(found_jpol->GetIndividualPolicyDiscrete(k));
-                of_jpol << endl << gmaa->PolicyToDotGraph(*policyDiscretePure,k);
-            }
+            const PolicyDiscretePure* policyDiscretePure=
+                static_cast<PolicyDiscretePure*>(found_jpol->GetIndividualPolicyDiscrete(k));
+            of_jpol << endl << gmaa->PolicyToDotGraph(*policyDiscretePure,k);
         }
-        else
-            of_jpol << "Not outputting joint policy" << endl;
 
         // check if the value corresponds to the optimal value in case
         // this is an optimal method and we already computed it before
